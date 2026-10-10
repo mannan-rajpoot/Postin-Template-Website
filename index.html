@@ -140,6 +140,12 @@
     <link rel="mask-icon" href="/icons/safari-pinned-tab.svg" color="#0d0d0d" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="preload" href="/logo.png" as="image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800&family=Inter:wght@400;500;600&display=swap"
+    />
 
     <!-- Structured data -->
     <script type="application/ld+json">
@@ -196,6 +202,7 @@
               "4:5 Instagram post layout",
               "8 theme presets and custom colours",
               "Two-colour titles",
+              "Post template and cover template with phone mockup",
               "Profile photo and handle",
               "PNG and JPG export up to 3240x4050",
               "Private: images never leave your browser"
@@ -767,14 +774,219 @@
         opacity: 1;
         transform: translate(-50%, 0);
       }
+      /* ---------- template switcher ---------- */
+      .seg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+        background: #f1efea;
+        padding: 5px;
+        border-radius: 14px;
+        margin: 0 0 6px;
+      }
+      .seg button {
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        font-size: 14px;
+        padding: 12px 10px;
+        border-radius: 10px;
+      }
+      .seg button:hover {
+        color: #111;
+      }
+      .seg button[aria-selected="true"] {
+        background: #111;
+        color: #fff;
+      }
+      body[data-t="post"] [data-tpl="cover"],
+      body[data-t="cover"] [data-tpl="post"] {
+        display: none !important;
+      }
       @media (prefers-reduced-motion: reduce) {
         * {
           transition: none !important;
         }
       }
+
+      /* ---------- v3 organised UI ---------- */
+      .panel {
+        --pad: 26px;
+        padding: var(--pad);
+      }
+      .phead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .phead .brand {
+        margin: 0;
+      }
+      .sub {
+        margin: 8px 0 16px;
+      }
+      .hn {
+        font-weight: 400;
+        color: #8a867c;
+      }
+      details.sec {
+        margin: 10px 0 0;
+        padding: 0;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: #fff;
+        overflow: hidden;
+      }
+      details.sec[open] {
+        border-color: #d6d2c7;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+      }
+      details.sec > summary {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 12px 14px;
+        font-size: 14.5px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+        background: #fbfaf8;
+        user-select: none;
+      }
+      details.sec[open] > summary {
+        border-bottom: 1px solid var(--line);
+      }
+      details.sec > summary::after {
+        content: "";
+        float: none;
+        margin-left: auto;
+        width: 8px;
+        height: 8px;
+        border-right: 2px solid #8a867c;
+        border-bottom: 2px solid #8a867c;
+        transform: rotate(45deg) translateY(-2px);
+        transition: transform 0.2s;
+      }
+      details.sec[open] > summary::after {
+        content: "";
+        transform: rotate(-135deg) translate(-2px, -2px);
+      }
+      .si {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+        background: #111;
+        color: #fff;
+        display: grid;
+        place-items: center;
+        flex: none;
+      }
+      .si .ico {
+        width: 16px;
+        height: 16px;
+      }
+      .sec-body {
+        padding: 0 16px 18px;
+      }
+      .sec-body input[type="text"],
+      .sec-body textarea,
+      .sec-body select {
+        margin: 0;
+      }
+      .rng {
+        margin-top: 16px;
+        min-width: 0;
+      }
+      .rng-h {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+      .rng-h label {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .rng-h output {
+        font-size: 12.5px;
+        color: var(--muted);
+        font-variant-numeric: tabular-nums;
+      }
+      .rng input[type="range"] {
+        width: 100%;
+        margin: 0;
+        accent-color: #111;
+      }
+      .row {
+        gap: 0 14px;
+      }
+      .check {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #fbfaf8;
+        margin-top: 14px;
+      }
+      .drop {
+        margin-top: 12px;
+      }
+      .sec-body > label.f:first-child {
+        margin-top: 14px;
+      }
+      .actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 5;
+        margin: 18px calc(var(--pad) * -1) calc(var(--pad) * -1);
+        padding: 14px var(--pad) var(--pad);
+        background: linear-gradient(to top, #fff 78%, rgba(255, 255, 255, 0));
+        border-radius: 0 0 14px 14px;
+        flex-wrap: nowrap;
+      }
+      @media (max-width: 1000px) {
+        .panel {
+          --pad: 22px;
+        }
+        .app {
+          display: block;
+        }
+        .preview {
+          position: sticky;
+          top: 0;
+          z-index: 30;
+          background: var(--bg);
+          padding: 4px 0 12px;
+          margin-bottom: 8px;
+        }
+        .frame {
+          width: min(100%, calc(44dvh * 0.8 + 16px));
+        }
+        .hint {
+          display: none;
+        }
+      }
+      @media (max-width: 600px) {
+        .panel {
+          --pad: 16px;
+        }
+        .actions {
+          flex-direction: row;
+        }
+        .btn-main {
+          width: auto;
+          flex: 1;
+        }
+        .row {
+          grid-template-columns: 1fr 1fr;
+        }
+        .sec-body {
+          padding: 0 12px 16px;
+        }
+      }
     </style>
   </head>
-  <body>
+  <body data-t="post">
     <a class="skip" href="#controls">Skip to controls</a>
     <main>
       <div class="app">
@@ -796,259 +1008,514 @@
 
         <!-- CONTROLS -->
         <section class="panel" id="controls" aria-label="Post settings">
-          <div class="brand">
-            <img
-              src="/logo.png"
-              alt="Postin logo"
-              width="40"
-              height="40"
-              decoding="async"
-            />
-            <h1>Postin</h1>
-          </div>
+          <header class="phead">
+            <div class="brand">
+              <img
+                src="/logo.png"
+                alt="Postin logo"
+                width="40"
+                height="40"
+                decoding="async"
+              />
+              <h1>Postin</h1>
+            </div>
+            <button class="btn-ghost small" id="reset" type="button">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 12a9 9 0 1 0 3-6.7" />
+                <path d="M3 4v5h5" /></svg
+              >Reset
+            </button>
+          </header>
           <p class="sub">
             Free Instagram design post maker. Change the text and image — the
             layout stays perfectly consistent every time.
           </p>
 
-          <label class="f" for="cat">Category label</label>
-          <input
-            type="text"
-            id="cat"
-            data-k="cat"
-            maxlength="40"
-            placeholder="e.g. Finance App"
-          />
-
-          <label class="f" for="title"
-            >App / project name
-            <span style="font-weight: 400; color: #888"
-              >(Enter = new line)</span
-            ></label
-          >
-          <textarea
-            id="title"
-            data-k="title"
-            rows="2"
-            placeholder="e.g. Personal Finance&#10;Mobile App"
-          ></textarea>
-
-          <label class="f" for="desc">Short description</label>
-          <textarea
-            id="desc"
-            data-k="desc"
-            rows="3"
-            placeholder="2–3 short lines about the design…"
-          ></textarea>
-
-          <label class="f" id="uiLbl">UI/UX design image</label>
-          <label class="drop" id="drop" tabindex="0" aria-labelledby="uiLbl">
-            <div class="ic">
+          <div class="seg" role="tablist" aria-label="Choose a template">
+            <button
+              type="button"
+              role="tab"
+              id="tabPost"
+              data-template="post"
+              aria-selected="true"
+            >
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 16V4" />
-                <path d="m7 9 5-5 5 5" />
-                <path d="M5 20h14" />
-              </svg>
-            </div>
-            <div>
-              <b id="dropTitle">Upload your UI/UX design</b
-              ><span>Click or drag &amp; drop · PNG / JPG / WebP</span>
-            </div>
-            <input type="file" id="uiFile" accept="image/*" />
-          </label>
-
-          <div class="row">
-            <div>
-              <label class="f" for="fit">Image fit</label>
-              <select id="fit" data-k="fit">
-                <option value="fill">Fill frame (same size, always)</option>
-                <option value="fit">Fit inside (show whole image)</option>
-              </select>
-            </div>
-            <div>
-              <label class="f" for="valign">Image position</label>
-              <select id="valign" data-k="valign">
-                <option value="center">Center</option>
-                <option value="top">Top</option>
-                <option value="bottom">Bottom</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div>
-              <label class="f">Image size</label>
-              <div class="range">
-                <input
-                  type="range"
-                  id="scale"
-                  data-k="scale"
-                  min="60"
-                  max="130"
-                  step="1"
-                /><output id="scaleO"></output>
-              </div>
-            </div>
-            <div>
-              <label class="f">Image up / down</label>
-              <div class="range">
-                <input
-                  type="range"
-                  id="offy"
-                  data-k="offy"
-                  min="-120"
-                  max="120"
-                  step="1"
-                /><output id="offyO"></output>
-              </div>
-            </div>
-          </div>
-
-          <label class="check"
-            ><input type="checkbox" id="blend" data-k="blend" /> Blend white
-            image background into the post</label
-          >
-
-          <label class="f" style="margin-top: 22px">Theme presets</label>
-          <div class="themes" id="themes"></div>
-
-          <label class="f" style="margin-top: 22px">Custom colors</label>
-          <div class="colors">
-            <label class="swatch"
-              ><input type="color" id="bg" data-k="bg" /><span
-                >Background</span
-              ></label
+                <rect x="4" y="3" width="16" height="18" rx="3" />
+                <path d="M8 8h8M8 12h8" /></svg
+              >Post template
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tabCover"
+              data-template="cover"
+              aria-selected="false"
             >
-            <label class="swatch"
-              ><input type="color" id="ink" data-k="ink" /><span
-                >Title text</span
-              ></label
-            >
-            <label class="swatch"
-              ><input type="color" id="dcol" data-k="dcol" /><span
-                >Description text</span
-              ></label
-            >
-            <label class="swatch"
-              ><input type="color" id="pill" data-k="pill" /><span
-                >Category label</span
-              ></label
-            >
-            <label class="swatch"
-              ><input type="color" id="acc" data-k="acc" /><span
-                >Title highlight</span
-              ></label
-            >
-          </div>
-
-          <label class="f" for="tone"
-            >Two-color title
-            <span style="font-weight: 400; color: #888"
-              >(or wrap words in [brackets])</span
-            ></label
-          >
-          <select id="tone" data-k="tone">
-            <option value="off">Off (one color)</option>
-            <option value="half">Second half of the title</option>
-            <option value="line2">Second line onward</option>
-            <option value="last">Last word only</option>
-          </select>
-
-          <label class="f" style="margin-top: 22px"
-            >Profile photo
-            <span style="font-weight: 400; color: #888"
-              >(bottom-left circle)</span
-            ></label
-          >
-          <label
-            class="drop"
-            id="avDrop"
-            tabindex="0"
-            aria-label="Upload profile photo"
-          >
-            <div class="ic avthumb" id="avThumb">
               <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 21a8 8 0 0 1 16 0" />
-              </svg>
-            </div>
-            <div>
-              <b id="avTitle">Upload profile photo</b
-              ><span>Click or drag &amp; drop · saved in this browser</span>
-            </div>
-            <input type="file" id="avFile" accept="image/*" />
-          </label>
-          <div class="row" style="align-items: end">
-            <div>
-              <label class="f">Photo zoom</label>
-              <div class="range">
-                <input
-                  type="range"
-                  id="avzoom"
-                  data-k="avzoom"
-                  min="100"
-                  max="250"
-                  step="1"
-                /><output id="avzoomO"></output>
-              </div>
-            </div>
-            <div class="inline" style="margin: 0 0 4px">
-              <button class="btn-ghost small" id="avClear" type="button">
-                <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M4 7h16" />
-                  <path d="M10 11v6M14 11v6" />
-                  <path d="M6 7l1 13h10l1-13" />
-                  <path d="M9 7V4h6v3" />
-                </svg>
-                Remove photo
-              </button>
-            </div>
+                <rect x="4" y="3" width="16" height="18" rx="3" />
+                <path d="M8 7h8" />
+                <rect x="8" y="12" width="8" height="9" rx="2" /></svg
+              >Cover template
+            </button>
           </div>
 
-          <details>
+          <!-- ===== POST ===== -->
+          <details class="sec" data-tpl="post" open>
             <summary>
-              More settings (corner text, handle, title size, export)
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 6h14M12 6v13M9 19h6" /></svg></span
+              >Text
             </summary>
-            <div class="row">
-              <div>
-                <label class="f" for="tl">Top-left text</label
-                ><input type="text" id="tl" data-k="tl" maxlength="40" />
-              </div>
-              <div>
-                <label class="f" for="tr">Top-right text</label
-                ><input type="text" id="tr" data-k="tr" maxlength="40" />
-              </div>
-            </div>
-            <label class="f" for="handle">Bottom handle</label>
-            <input type="text" id="handle" data-k="handle" maxlength="40" />
-
-            <label class="f">Title size</label>
-            <div class="range">
+            <div class="sec-body">
+              <label class="f" for="cat">Category label</label>
               <input
-                type="range"
-                id="tsize"
-                data-k="tsize"
-                min="44"
-                max="96"
-                step="1"
-              /><output id="tsizeO"></output>
-            </div>
-
-            <div class="row">
-              <div>
-                <label class="f" for="exp">Export quality</label>
-                <select id="exp" data-k="exp">
-                  <option value="1">1080 × 1350 (Instagram)</option>
-                  <option value="2">2160 × 2700 (High)</option>
-                  <option value="3">3240 × 4050 (Ultra)</option>
-                </select>
+                type="text"
+                id="cat"
+                data-k="cat"
+                maxlength="40"
+                placeholder="e.g. Finance App"
+              />
+              <label class="f" for="title"
+                >App / project name
+                <span class="hn">(Enter = new line)</span></label
+              >
+              <textarea
+                id="title"
+                data-k="title"
+                rows="2"
+                placeholder="e.g. Personal Finance&#10;Mobile App"
+              ></textarea>
+              <label class="f" for="desc">Short description</label>
+              <textarea
+                id="desc"
+                data-k="desc"
+                rows="3"
+                placeholder="2–3 short lines about the design…"
+              ></textarea>
+              <label class="f" for="tone"
+                >Two-colour title
+                <span class="hn">(or wrap words in [brackets])</span></label
+              >
+              <select id="tone" data-k="tone">
+                <option value="off">Off (one colour)</option>
+                <option value="half">Second half of the title</option>
+                <option value="line2">Second line onward</option>
+                <option value="last">Last word only</option>
+              </select>
+              <div class="rng">
+                <div class="rng-h">
+                  <label for="tsize">Title size</label
+                  ><output id="tsizeO"></output>
+                </div>
+                <input
+                  type="range"
+                  id="tsize"
+                  data-k="tsize"
+                  min="44"
+                  max="96"
+                  step="1"
+                />
               </div>
-              <div>
-                <label class="f" for="fmt">Format</label>
-                <select id="fmt" data-k="fmt">
-                  <option value="png">PNG (best quality)</option>
-                  <option value="jpg">JPG (smaller file)</option>
-                </select>
+            </div>
+          </details>
+          <details class="sec" data-tpl="post" open>
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="3" />
+                  <circle cx="9" cy="10" r="1.6" />
+                  <path d="m4 18 5-5 4 4 3-3 4 4" /></svg></span
+              >UI/UX design image
+            </summary>
+            <div class="sec-body">
+              <label class="drop" id="drop" tabindex="0"
+                ><div class="ic">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 16V4" />
+                    <path d="m7 9 5-5 5 5" />
+                    <path d="M5 20h14" />
+                  </svg>
+                </div>
+                <div>
+                  <b id="dropTitle">Upload your UI/UX design</b
+                  ><span>Click or drag &amp; drop · PNG / JPG / WebP</span>
+                </div>
+                <input type="file" id="uiFile" accept="image/*"
+              /></label>
+              <div class="row">
+                <div>
+                  <label class="f" for="fit">Image fit</label>
+                  <select id="fit" data-k="fit">
+                    <option value="fill">Fill frame</option>
+                    <option value="fit">Fit inside</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="f" for="valign">Position</label>
+                  <select id="valign" data-k="valign">
+                    <option value="center">Center</option>
+                    <option value="top">Top</option>
+                    <option value="bottom">Bottom</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="scale">Image size</label
+                    ><output id="scaleO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="scale"
+                    data-k="scale"
+                    min="60"
+                    max="130"
+                    step="1"
+                  />
+                </div>
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="offy">Up / down</label
+                    ><output id="offyO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="offy"
+                    data-k="offy"
+                    min="-120"
+                    max="120"
+                    step="1"
+                  />
+                </div>
+              </div>
+              <label class="check"
+                ><input type="checkbox" id="blend" data-k="blend" /> Blend white
+                image background into the post</label
+              >
+            </div>
+          </details>
+
+          <!-- ===== COVER ===== -->
+          <details class="sec" data-tpl="cover" open>
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 6h14M12 6v13M9 19h6" /></svg></span
+              >Title &amp; subtitle
+            </summary>
+            <div class="sec-body">
+              <label class="f" for="ctitle"
+                >Main title
+                <span class="hn"
+                  >(Enter = new line · [brackets] = colour)</span
+                ></label
+              >
+              <textarea
+                id="ctitle"
+                data-k="ctitle"
+                rows="2"
+                placeholder="e.g. Build This&#10;App"
+              ></textarea>
+              <div class="rng">
+                <div class="rng-h">
+                  <label for="ctsize">Title size</label
+                  ><output id="ctsizeO"></output>
+                </div>
+                <input
+                  type="range"
+                  id="ctsize"
+                  data-k="ctsize"
+                  min="90"
+                  max="200"
+                  step="1"
+                />
+              </div>
+              <label class="f" for="csub"
+                >Subtitle <span class="hn">([brackets] = colour)</span></label
+              >
+              <input
+                type="text"
+                id="csub"
+                data-k="csub"
+                maxlength="60"
+                placeholder="e.g. in [1-4] Weeks"
+              />
+              <label class="check"
+                ><input type="checkbox" id="cline" data-k="cline" /> Brush
+                underline below subtitle</label
+              >
+            </div>
+          </details>
+          <details class="sec" data-tpl="cover" open>
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="7" y="2.5" width="10" height="19" rx="3" />
+                  <path d="M10.5 5.5h3" /></svg></span
+              >iPhone mockup
+            </summary>
+            <div class="sec-body">
+              <label class="check" style="margin-top: 4px"
+                ><input type="checkbox" id="cshowphone" data-k="cshowphone" />
+                Show phone mockup</label
+              >
+              <label class="f" id="cvLbl"
+                >Your iPhone mockup image
+                <span class="hn">(auto-fits)</span></label
+              >
+              <label
+                class="drop"
+                id="cvDrop"
+                tabindex="0"
+                aria-labelledby="cvLbl"
+                ><div class="ic">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 16V4" />
+                    <path d="m7 9 5-5 5 5" />
+                    <path d="M5 20h14" />
+                  </svg>
+                </div>
+                <div>
+                  <b id="cvDropTitle">Upload your iPhone mockup</b
+                  ><span>Used as the phone · PNG / JPG / WebP</span>
+                </div>
+                <input type="file" id="cvFile" accept="image/*"
+              /></label>
+              <label class="check"
+                ><input type="checkbox" id="cbgrem" data-k="cbgrem" />
+                Auto-remove the solid background around the phone</label
+              >
+              <div class="row">
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="pscale">Phone size</label
+                    ><output id="pscaleO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="pscale"
+                    data-k="pscale"
+                    min="70"
+                    max="130"
+                    step="1"
+                  />
+                </div>
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="poffy">Up / down</label
+                    ><output id="poffyO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="poffy"
+                    data-k="poffy"
+                    min="-200"
+                    max="200"
+                    step="1"
+                  />
+                </div>
+              </div>
+            </div>
+          </details>
+          <details class="sec">
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <circle cx="8.5" cy="10" r="1" />
+                  <circle cx="12" cy="7.5" r="1" />
+                  <circle cx="15.5" cy="10" r="1" /></svg></span
+              >Theme &amp; colours
+            </summary>
+            <div class="sec-body">
+              <label class="f" style="margin-top: 12px">Theme presets</label>
+              <div class="themes" id="themes"></div>
+
+              <div data-tpl="post">
+                <label class="f">Custom colours</label>
+                <div class="colors">
+                  <label class="swatch"
+                    ><input type="color" id="bg" data-k="bg" /><span
+                      >Background</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="ink" data-k="ink" /><span
+                      >Title text</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="dcol" data-k="dcol" /><span
+                      >Description</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="pill" data-k="pill" /><span
+                      >Category label</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="acc" data-k="acc" /><span
+                      >Title highlight</span
+                    ></label
+                  >
+                </div>
+              </div>
+              <div data-tpl="cover">
+                <label class="f">Custom colours</label>
+                <div class="colors">
+                  <label class="swatch"
+                    ><input type="color" id="cbg" data-k="cbg" /><span
+                      >Background</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="cink" data-k="cink" /><span
+                      >Title &amp; subtitle</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="cdcol" data-k="cdcol" /><span
+                      >Secondary text</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="cacc" data-k="cacc" /><span
+                      >Title [ ] colour</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="csubacc" data-k="csubacc" /><span
+                      >Subtitle [ ] colour</span
+                    ></label
+                  ><label class="swatch"
+                    ><input type="color" id="clinecol" data-k="clinecol" /><span
+                      >Brush underline</span
+                    ></label
+                  >
+                </div>
+                <label class="check"
+                  ><input type="checkbox" id="cgrain" data-k="cgrain" /> Soft
+                  paper grain on background</label
+                >
+              </div>
+            </div>
+          </details>
+          <details class="sec">
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 21a8 8 0 0 1 16 0" /></svg></span
+              >Profile &amp; footer
+            </summary>
+            <div class="sec-body">
+              <label class="f" id="avLbl" style="margin-top: 12px"
+                >Profile photo</label
+              >
+              <label
+                class="drop"
+                id="avDrop"
+                tabindex="0"
+                aria-labelledby="avLbl"
+              >
+                <div class="ic avthumb" id="avThumb">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                  </svg>
+                </div>
+                <div>
+                  <b id="avTitle">Upload profile photo</b
+                  ><span>Click or drag &amp; drop · saved in this browser</span>
+                </div>
+                <input type="file" id="avFile" accept="image/*" />
+              </label>
+              <div class="row" style="align-items: end">
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="avzoom">Photo zoom</label
+                    ><output id="avzoomO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="avzoom"
+                    data-k="avzoom"
+                    min="100"
+                    max="250"
+                    step="1"
+                  />
+                </div>
+                <div class="rng">
+                  <button
+                    class="btn-ghost small"
+                    id="avClear"
+                    type="button"
+                    style="width: 100%"
+                  >
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16" />
+                      <path d="M10 11v6M14 11v6" />
+                      <path d="M6 7l1 13h10l1-13" />
+                      <path d="M9 7V4h6v3" /></svg
+                    >Remove photo
+                  </button>
+                </div>
+              </div>
+              <label class="f" for="handle">Name / handle</label>
+              <input
+                type="text"
+                id="handle"
+                data-k="handle"
+                maxlength="40"
+                placeholder="@yourname"
+              />
+              <div class="row" data-tpl="post">
+                <div>
+                  <label class="f" for="tl">Top-left text</label
+                  ><input type="text" id="tl" data-k="tl" maxlength="40" />
+                </div>
+                <div>
+                  <label class="f" for="tr">Top-right text</label
+                  ><input type="text" id="tr" data-k="tr" maxlength="40" />
+                </div>
+              </div>
+              <div data-tpl="cover">
+                <label class="check"
+                  ><input type="checkbox" id="cswipe" data-k="cswipe" /> Show
+                  “Swipe →” at bottom-right</label
+                >
+                <label class="f" for="swipe">Swipe text</label>
+                <input
+                  type="text"
+                  id="swipe"
+                  data-k="swipe"
+                  maxlength="20"
+                  placeholder="Swipe"
+                />
+              </div>
+            </div>
+          </details>
+          <details class="sec">
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 4v12" />
+                  <path d="m7 11 5 5 5-5" />
+                  <path d="M5 20h14" /></svg></span
+              >Export
+            </summary>
+            <div class="sec-body">
+              <div class="row">
+                <div>
+                  <label class="f" for="exp">Quality</label>
+                  <select id="exp" data-k="exp">
+                    <option value="1">1080 × 1350 (Instagram)</option>
+                    <option value="2">2160 × 2700 (High)</option>
+                    <option value="3">3240 × 4050 (Ultra)</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="f" for="fmt">Format</label>
+                  <select id="fmt" data-k="fmt">
+                    <option value="png">PNG (best)</option>
+                    <option value="jpg">JPG (smaller)</option>
+                  </select>
+                </div>
               </div>
             </div>
           </details>
@@ -1060,12 +1527,6 @@
                 <path d="m7 11 5 5 5-5" />
                 <path d="M5 20h14" /></svg
               ><span>Download post image</span>
-            </button>
-            <button class="btn-ghost" id="reset" type="button">
-              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M3 12a9 9 0 1 0 3-6.7" />
-                <path d="M3 4v5h5" /></svg
-              >Reset
             </button>
           </div>
         </section>
@@ -1086,6 +1547,10 @@
           H = 1350;
         const FONT =
           "'Plus Jakarta Sans', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
+        const FONT_T =
+          "'Inter Tight', 'Plus Jakarta Sans', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
+        const FONT_I =
+          "'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
 
         const DEFAULTS = {
           cat: "",
@@ -1109,7 +1574,33 @@
           avzoom: 100,
           exp: "2",
           fmt: "png",
+          /* cover template */
+          tpl: "post",
+          ctitle: "Build This\nApp",
+          ctsize: 164,
+          csub: "in [1-4] Weeks",
+          cline: true,
+          cshowphone: true,
+          pscale: 100,
+          poffy: 0,
+          iscale: 100,
+          ioffy: 0,
+          cphone: "silver",
+          cgrain: true,
+          cbg: "#f1f1ef",
+          cink: "#0a0a0a",
+          cdcol: "#6b6b6b",
+          cpill: "#e8edfb",
+          cacc: "#4a6ee0",
+          role: "",
+          swipe: "Swipe",
+          csubacc: "#4a6ee0",
+          clinecol: "#4a6ee0",
+          cbgrem: true,
+          _v: 2,
+          cswipe: true,
         };
+        const PCT = ["scale", "avzoom", "pscale", "iscale"];
 
         /* ---------- storage (safe) ---------- */
         const KEY = "postin_settings_v1",
@@ -1145,8 +1636,21 @@
           } catch (e) {}
         }
 
-        let S = Object.assign({}, DEFAULTS, load());
+        const saved0 = load();
+        if (saved0._v !== 2)
+          [
+            "ctitle",
+            "ctsize",
+            "csub",
+            "role",
+            "pscale",
+            "poffy",
+            "iscale",
+            "ioffy",
+          ].forEach((k) => delete saved0[k]);
+        let S = Object.assign({}, DEFAULTS, saved0, { _v: 2 });
         let uiImg = null,
+          uiCv = null,
           avImg = null;
 
         const cv = document.getElementById("cv");
@@ -1264,7 +1768,7 @@
         }
 
         /* ---------- main drawing (preview + export use the same function) ---------- */
-        function draw(c, k, ghost) {
+        function drawPost(c, k, ghost) {
           // ghost = preview-only hints for empty fields (never exported)
           const GH = "#c4c0b6";
           const INK = validColor(S.ink, DEFAULTS.ink);
@@ -1498,6 +2002,349 @@
           c.stroke();
         }
 
+        /* =====================================================
+           COVER TEMPLATE
+           ===================================================== */
+        function draw(c, k, ghost) {
+          if (S.tpl === "cover") drawCover(c, k, ghost);
+          else drawPost(c, k, ghost);
+        }
+
+        let grainTile = null;
+        function grain() {
+          if (grainTile) return grainTile;
+          const g = document.createElement("canvas");
+          g.width = g.height = 180;
+          const gx = g.getContext("2d");
+          const id = gx.createImageData(180, 180);
+          let s = 1234567;
+          for (let i = 0; i < id.data.length; i += 4) {
+            s = (s * 1664525 + 1013904223) >>> 0;
+            const v = s >>> 24;
+            id.data[i] = id.data[i + 1] = id.data[i + 2] = v;
+            id.data[i + 3] = 16;
+          }
+          gx.putImageData(id, 0, 0);
+          grainTile = g;
+          return g;
+        }
+
+        function star4(c, cx, cy, r) {
+          const q = r * 0.2;
+          c.beginPath();
+          c.moveTo(cx, cy - r);
+          c.quadraticCurveTo(cx + q, cy - q, cx + r, cy);
+          c.quadraticCurveTo(cx + q, cy + q, cx, cy + r);
+          c.quadraticCurveTo(cx - q, cy + q, cx - r, cy);
+          c.quadraticCurveTo(cx - q, cy - q, cx, cy - r);
+          c.closePath();
+          c.fill();
+        }
+
+        // hand-painted tapered underline
+        function brush(c, x0, x1, yb, col) {
+          const w = x1 - x0,
+            N = 48;
+          const yAt = (t) => yb + 6 - 13 * t + 2.5 * Math.sin(t * Math.PI * 2);
+          const thick = (t) => 3 + 5.5 * Math.sin(Math.PI * Math.pow(t, 0.7));
+          c.fillStyle = col;
+          c.beginPath();
+          for (let i = 0; i <= N; i++) {
+            const t = i / N;
+            c.lineTo(x0 + w * t, yAt(t) - thick(t) / 2);
+          }
+          for (let i = N; i >= 0; i--) {
+            const t = i / N;
+            c.lineTo(x0 + w * t, yAt(t) + thick(t) / 2);
+          }
+          c.closePath();
+          c.fill();
+          // thin secondary stroke
+          c.save();
+          c.globalAlpha = 0.8;
+          c.beginPath();
+          const a = 0.5;
+          for (let i = 0; i <= 24; i++) {
+            const t = a + ((1 - a) * i) / 24;
+            c.lineTo(
+              x0 + w * t,
+              yAt(t) + 8 - 1.1 * Math.sin(Math.PI * ((t - a) / (1 - a))),
+            );
+          }
+          for (let i = 24; i >= 0; i--) {
+            const t = a + ((1 - a) * i) / 24;
+            c.lineTo(
+              x0 + w * t,
+              yAt(t) + 8 + 1.1 * Math.sin(Math.PI * ((t - a) / (1 - a))) + 0.6,
+            );
+          }
+          c.closePath();
+          c.fill();
+          c.restore();
+        }
+
+        const PHONE_METAL = {
+          silver: ["#ececef", "#a5a5aa", "#f4f4f6", "#8f8f95", "#d6d6da"],
+          black: ["#4d4d52", "#1e1e21", "#58585d", "#18181b", "#3b3b3f"],
+          gold: ["#f2e6d2", "#c3ac87", "#f7eddb", "#ad9773", "#e3d3b7"],
+          blue: ["#92a6c2", "#4e617e", "#a8bad2", "#41536e", "#7f94b2"],
+        };
+
+        function drawCover(c, k, ghost) {
+          const GH = "#c4c0b6";
+          const BG = validColor(S.cbg, DEFAULTS.cbg);
+          const INK = validColor(S.cink, DEFAULTS.cink);
+          const DCOL = validColor(S.cdcol, DEFAULTS.cdcol);
+          const ACC = validColor(S.cacc, DEFAULTS.cacc);
+          const put = (v, ph, x, y, col) => {
+            const t = v || (ghost ? ph : "");
+            if (!t) return;
+            c.fillStyle = v ? col : GH;
+            c.fillText(t, x, y);
+          };
+
+          c.setTransform(k, 0, 0, k, 0, 0);
+          c.clearRect(0, 0, W, H);
+          c.globalAlpha = 1;
+          c.globalCompositeOperation = "source-over";
+          c.setLineDash([]);
+          c.imageSmoothingEnabled = true;
+          c.imageSmoothingQuality = "high";
+          c.textBaseline = "alphabetic";
+          spacing(c, "0px");
+
+          // background (+ optional paper grain)
+          c.fillStyle = BG;
+          c.fillRect(0, 0, W, H);
+          if (S.cgrain) {
+            c.fillStyle = c.createPattern(grain(), "repeat");
+            c.fillRect(0, 0, W, H);
+          }
+
+          // ---- main title (auto-shrinks if a word is too wide) ----
+          let ts = +S.ctsize || 164;
+          const setT = () => {
+            c.font = `800 ${ts}px ${FONT_T}`;
+            spacing(c, -ts * 0.035 + "px");
+          };
+          setT();
+          const paras = parseTitle(
+            S.ctitle || (ghost ? "Your Title\nGoes Here" : ""),
+          );
+          const lineW = (line) => {
+            const sp = c.measureText(" ").width;
+            return line.reduce(
+              (a, t, i) => a + c.measureText(t.w).width + (i ? sp : 0),
+              0,
+            );
+          };
+          let tLines = wrapTokens(c, paras, 960);
+          let guard = 0;
+          while (
+            ts > 60 &&
+            guard++ < 40 &&
+            tLines.some((l) => lineW(l) > 980)
+          ) {
+            ts -= 4;
+            setT();
+            tLines = wrapTokens(c, paras, 960);
+          }
+          c.textAlign = "left";
+          const lh = ts * 0.97;
+          let y = 166 + ts * 0.73; // baseline of first line
+          tLines.forEach((line) => {
+            const sp = c.measureText(" ").width;
+            let x = W / 2 - lineW(line) / 2;
+            line.forEach((t) => {
+              c.fillStyle = !S.ctitle ? GH : t.acc ? ACC : INK;
+              c.fillText(t.w, x, y);
+              x += c.measureText(t.w).width + sp;
+            });
+            y += lh;
+          });
+          const lastBase = y - lh;
+          spacing(c, "0px");
+
+          // ---- subtitle + brush underline ----
+          const ss = 66;
+          const hasSub = !!(S.csub || "").trim();
+          let contentBottom = lastBase + 24;
+          if (hasSub || ghost) {
+            c.font = `500 ${ss}px ${FONT_I}`;
+            spacing(c, -ss * 0.02 + "px");
+            const SACC = validColor(S.csubacc, DEFAULTS.csubacc);
+            const LCOL = validColor(S.clinecol, DEFAULTS.clinecol);
+            const sLines = wrapTokens(
+              c,
+              parseTitle(S.csub || "Subtitle goes [here]"),
+              900,
+            );
+            const slh = ss * 1.2;
+            let sy = lastBase + ts * 0.62,
+              lastL = W / 2,
+              lastR = W / 2;
+            sLines.forEach((line) => {
+              const sp = c.measureText(" ").width;
+              const tot = lineW(line);
+              let x = W / 2 - tot / 2;
+              lastL = x;
+              lastR = x + tot;
+              line.forEach((t) => {
+                c.fillStyle = !hasSub ? GH : t.acc ? SACC : INK;
+                c.fillText(t.w, x, sy);
+                x += c.measureText(t.w).width + sp;
+              });
+              sy += slh;
+            });
+            const subBase = sy - slh;
+            spacing(c, "0px");
+            contentBottom = subBase + 18;
+            if (S.cline) {
+              brush(
+                c,
+                lastL + 30,
+                lastR + 28,
+                subBase + 33,
+                hasSub ? LCOL : GH,
+              );
+              contentBottom = subBase + 48;
+            }
+          }
+
+          // ---- footer metrics (needed so the phone never touches the name) ----
+          const ax = 89,
+            ay = 1264,
+            ar = 29;
+          const tx = ax + ar + 9;
+          c.font = `600 21px ${FONT_I}`;
+          const hT = S.handle || (ghost ? "@your.handle" : "");
+          const hW = hT ? c.measureText(hT).width : 0;
+          const footR = Math.max(ax + ar, tx + hW);
+          const pwLimit = W - 2 * (footR + 26);
+          // enough room beside the phone? -> phone bleeds off the bottom (reference look)
+          // otherwise (long name) -> phone is cut cleanly above the footer with a soft fade
+          const beside = pwLimit >= 470;
+          const clipY = ay - ar - 22;
+
+          // ---- phone mockup = your uploaded image, auto-sized to the free space ----
+          if (S.cshowphone) {
+            const ratio = uiCv ? uiCv.height / uiCv.width : 2.07;
+            const top0 = contentBottom + 62;
+            let pw = beside
+              ? Math.min(Math.max((H - top0) / 1.13, 440), 640, pwLimit)
+              : Math.min(Math.max((clipY - top0) / 0.95, 420), 640);
+            pw *= (+S.pscale || 100) / 100;
+            const ph = pw * ratio;
+            const ox = (W - pw) / 2;
+            const top = top0 + (+S.poffy || 0);
+            let pc = c,
+              off = null;
+            if (!beside) {
+              off = document.createElement("canvas");
+              off.width = c.canvas.width;
+              off.height = c.canvas.height;
+              pc = off.getContext("2d");
+              pc.setTransform(k, 0, 0, k, 0, 0);
+              pc.textBaseline = "alphabetic";
+              pc.imageSmoothingQuality = "high";
+            }
+            if (uiCv) {
+              pc.drawImage(uiCv, ox, top, pw, ph);
+            } else if (ghost) {
+              pc.save();
+              pc.setLineDash([10, 10]);
+              pc.strokeStyle = "#c9c5bb";
+              pc.lineWidth = 2;
+              rr(pc, ox, top, pw, ph, pw * 0.15);
+              pc.stroke();
+              pc.setLineDash([]);
+              pc.fillStyle = "#9a968c";
+              pc.textAlign = "center";
+              const vis = Math.min(H, top + ph) - top;
+              pc.font = `600 28px ${FONT}`;
+              pc.fillText(
+                "Upload your iPhone mockup",
+                W / 2,
+                top + vis / 2 - 2,
+              );
+              pc.font = `400 21px ${FONT}`;
+              pc.fillText("It fits automatically", W / 2, top + vis / 2 + 34);
+              pc.restore();
+            }
+            if (off) {
+              // soft fade-out above the footer, keeps the paper grain underneath intact
+              const fy = clipY - 90;
+              pc.globalCompositeOperation = "destination-out";
+              const fg = pc.createLinearGradient(0, fy, 0, clipY);
+              fg.addColorStop(0, "rgba(0,0,0,0)");
+              fg.addColorStop(1, "rgba(0,0,0,1)");
+              pc.fillStyle = fg;
+              pc.fillRect(0, fy, W, 90);
+              pc.fillStyle = "#000";
+              pc.fillRect(0, clipY, W, H - clipY);
+              pc.globalCompositeOperation = "source-over";
+              c.drawImage(off, 0, 0, W, H);
+            }
+          }
+
+          // ---- footer: avatar + @handle + tagline ----
+          c.textBaseline = "middle";
+          c.save();
+          c.beginPath();
+          c.arc(ax, ay, ar, 0, Math.PI * 2);
+          c.closePath();
+          c.clip();
+          if (avImg) {
+            const s =
+              Math.max(
+                (2 * ar) / avImg.naturalWidth,
+                (2 * ar) / avImg.naturalHeight,
+              ) *
+              ((+S.avzoom || 100) / 100);
+            const w = avImg.naturalWidth * s,
+              h = avImg.naturalHeight * s;
+            c.drawImage(avImg, ax - w / 2, ay - h / 2, w, h);
+          } else {
+            const u = ar / 44;
+            c.fillStyle = "#141414";
+            c.fillRect(ax - ar, ay - ar, ar * 2, ar * 2);
+            c.fillStyle = "#4a4a4a";
+            c.beginPath();
+            c.arc(ax, ay - 9 * u, 14 * u, 0, Math.PI * 2);
+            c.fill();
+            c.beginPath();
+            c.ellipse(ax, ay + 34 * u, 28 * u, 24 * u, 0, 0, Math.PI * 2);
+            c.fill();
+          }
+          c.restore();
+
+          c.textAlign = "left";
+          c.font = `600 21px ${FONT_I}`;
+          put(S.handle, "@your.handle", tx, ay + 1, INK);
+
+          // ---- swipe → (same style as the Post template) ----
+          if (S.cswipe) {
+            const rx = W - 62;
+            c.font = `500 25px ${FONT}`;
+            c.fillStyle = DCOL;
+            c.textAlign = "right";
+            c.fillText(S.swipe || "Swipe", rx - 40, ay + 1);
+            c.strokeStyle = DCOL;
+            c.lineWidth = 2.2;
+            c.lineCap = "round";
+            c.lineJoin = "round";
+            c.beginPath();
+            c.moveTo(rx - 26, ay + 1);
+            c.lineTo(rx, ay + 1);
+            c.stroke();
+            c.beginPath();
+            c.moveTo(rx - 10, ay - 9);
+            c.lineTo(rx, ay + 1);
+            c.lineTo(rx - 10, ay + 11);
+            c.stroke();
+          }
+        }
+
         // throttle redraws to one per frame so sliders stay smooth on phones
         let raf = 0;
         function render() {
@@ -1516,6 +2363,10 @@
             document.fonts.load(`500 25px 'Plus Jakarta Sans'`),
             document.fonts.load(`600 30px 'Plus Jakarta Sans'`),
             document.fonts.load(`800 70px 'Plus Jakarta Sans'`),
+            document.fonts.load(`800 164px 'Inter Tight'`).catch(() => {}),
+            document.fonts.load(`400 20px 'Inter'`).catch(() => {}),
+            document.fonts.load(`500 66px 'Inter'`).catch(() => {}),
+            document.fonts.load(`600 21px 'Inter'`).catch(() => {}),
           ])
             .then(render)
             .catch(() => {});
@@ -1530,10 +2381,9 @@
           const out = document.getElementById(el.id + "O");
           const upd = () => {
             if (out)
-              out.textContent =
-                k === "scale" || k === "avzoom"
-                  ? el.value + "%"
-                  : el.value + (k === "tsize" ? "px" : "");
+              out.textContent = PCT.includes(k)
+                ? el.value + "%"
+                : el.value + (k === "tsize" || k === "ctsize" ? "px" : "");
           };
           upd();
           const handler = () => {
@@ -1558,10 +2408,9 @@
             else el.value = S[k];
             const out = document.getElementById(el.id + "O");
             if (out)
-              out.textContent =
-                k === "scale" || k === "avzoom"
-                  ? el.value + "%"
-                  : el.value + (k === "tsize" ? "px" : "");
+              out.textContent = PCT.includes(k)
+                ? el.value + "%"
+                : el.value + (k === "tsize" || k === "ctsize" ? "px" : "");
           });
         }
 
@@ -1714,6 +2563,135 @@
           render();
         });
 
+        /* ---------- cover phone image drop zone ---------- */
+        const cvFile = document.getElementById("cvFile");
+        const cvDrop = document.getElementById("cvDrop");
+        const cvDropTitle = document.getElementById("cvDropTitle");
+        let uiCvRaw = null;
+        // draws the mockup into a canvas, removes the flat outer background
+        // (flood fill from the edges) and crops to the phone
+        function processMock(img, remove) {
+          const sc = Math.min(
+            1,
+            3200 / Math.max(img.naturalWidth, img.naturalHeight),
+          );
+          const w = Math.round(img.naturalWidth * sc),
+            h = Math.round(img.naturalHeight * sc);
+          const c = document.createElement("canvas");
+          c.width = w;
+          c.height = h;
+          const x = c.getContext("2d", { willReadFrequently: true });
+          x.drawImage(img, 0, 0, w, h);
+          if (!remove) return c;
+          const id = x.getImageData(0, 0, w, h),
+            d = id.data;
+          const br = d[0],
+            bg = d[1],
+            bb = d[2],
+            T = 3;
+          const isBg = (i) =>
+            Math.abs(d[i] - br) <= T &&
+            Math.abs(d[i + 1] - bg) <= T &&
+            Math.abs(d[i + 2] - bb) <= T;
+          if (d[3] >= 10) {
+            const seen = new Uint8Array(w * h),
+              st = new Int32Array(w * h);
+            let sp = 0;
+            const push = (p) => {
+              if (!seen[p] && isBg(p * 4)) {
+                seen[p] = 1;
+                st[sp++] = p;
+              }
+            };
+            for (let i = 0; i < w; i++) {
+              push(i);
+              push((h - 1) * w + i);
+            }
+            for (let j = 0; j < h; j++) {
+              push(j * w);
+              push(j * w + w - 1);
+            }
+            while (sp) {
+              const p = st[--sp];
+              d[p * 4 + 3] = 0;
+              const px = p % w;
+              if (px > 0) push(p - 1);
+              if (px < w - 1) push(p + 1);
+              if (p >= w) push(p - w);
+              if (p < w * (h - 1)) push(p + w);
+            }
+          }
+          let x0 = w,
+            y0 = h,
+            x1 = -1,
+            y1 = -1;
+          for (let j = 0; j < h; j++)
+            for (let i = 0; i < w; i++)
+              if (d[(j * w + i) * 4 + 3] > 8) {
+                if (i < x0) x0 = i;
+                if (i > x1) x1 = i;
+                if (j < y0) y0 = j;
+                if (j > y1) y1 = j;
+              }
+          if (x1 < 0) return c;
+          x.putImageData(id, 0, 0);
+          const o = document.createElement("canvas");
+          o.width = x1 - x0 + 1;
+          o.height = y1 - y0 + 1;
+          o.getContext("2d").drawImage(
+            c,
+            x0,
+            y0,
+            o.width,
+            o.height,
+            0,
+            0,
+            o.width,
+            o.height,
+          );
+          return o;
+        }
+        document.getElementById("cbgrem").addEventListener("change", () => {
+          if (uiCvRaw) {
+            uiCv = processMock(uiCvRaw, S.cbgrem);
+            render();
+          }
+        });
+        function setCover(file) {
+          loadImageFile(file, (img, f) => {
+            uiCvRaw = img;
+            uiCv = processMock(img, S.cbgrem);
+            cvDropTitle.textContent =
+              f.name.length > 34 ? f.name.slice(0, 31) + "…" : f.name;
+            render();
+          });
+        }
+        cvFile.addEventListener("change", (e) => {
+          setCover(e.target.files[0]);
+          e.target.value = "";
+        });
+        ["dragenter", "dragover"].forEach((ev) =>
+          cvDrop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            cvDrop.classList.add("over");
+          }),
+        );
+        ["dragleave", "drop"].forEach((ev) =>
+          cvDrop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            cvDrop.classList.remove("over");
+          }),
+        );
+        cvDrop.addEventListener("drop", (e) =>
+          setCover(e.dataTransfer.files[0]),
+        );
+        cvDrop.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            cvFile.click();
+          }
+        });
+
         /* ---------- theme presets ---------- */
         const THEMES = [
           {
@@ -1781,54 +2759,120 @@
             acc: "#e0b24a",
           },
         ];
+        const COVER_THEMES = THEMES.map((t, i) =>
+          i === 0
+            ? {
+                n: "Paper",
+                bg: "#f1f1ef",
+                ink: "#0a0a0a",
+                dcol: "#6b6b6b",
+                pill: "#e8edfb",
+                acc: "#4a6ee0",
+              }
+            : t,
+        );
+        const KM = {
+          post: {
+            bg: "bg",
+            ink: "ink",
+            dcol: "dcol",
+            pill: "pill",
+            acc: "acc",
+          },
+          cover: {
+            bg: "cbg",
+            ink: "cink",
+            dcol: "cdcol",
+            pill: "cpill",
+            acc: "cacc",
+          },
+        };
+        const curT = () => (S.tpl === "cover" ? "cover" : "post");
+        const curThemes = () => (curT() === "cover" ? COVER_THEMES : THEMES);
         const themesEl = document.getElementById("themes");
-        THEMES.forEach((t) => {
-          const b = document.createElement("button");
-          b.type = "button";
-          b.className = "theme";
-          b.innerHTML =
-            '<i style="background:' +
-            t.bg +
-            ";color:" +
-            t.ink +
-            '">Aa <em style="color:' +
-            t.acc +
-            '">Aa</em></i>' +
-            t.n;
-          b.addEventListener("click", () => {
-            S.bg = t.bg;
-            S.ink = t.ink;
-            S.dcol = t.dcol;
-            S.pill = t.pill;
-            S.acc = t.acc;
-            save();
-            syncControls();
-            render();
-            markTheme();
+
+        function buildThemes() {
+          themesEl.innerHTML = "";
+          curThemes().forEach((t) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.className = "theme";
+            b.innerHTML =
+              '<i style="background:' +
+              t.bg +
+              ";color:" +
+              t.ink +
+              '">Aa <em style="color:' +
+              t.acc +
+              '">Aa</em></i>' +
+              t.n;
+            b.addEventListener("click", () => {
+              const m = KM[curT()];
+              S[m.bg] = t.bg;
+              S[m.ink] = t.ink;
+              S[m.dcol] = t.dcol;
+              S[m.pill] = t.pill;
+              S[m.acc] = t.acc;
+              if (curT() === "cover") {
+                S.csubacc = t.acc;
+                S.clinecol = t.acc;
+              }
+              save();
+              syncControls();
+              render();
+              markTheme();
+            });
+            themesEl.appendChild(b);
           });
-          themesEl.appendChild(b);
-        });
+        }
 
         function markTheme() {
+          const m = KM[curT()];
+          const list = curThemes();
           [...themesEl.children].forEach((b, i) => {
-            const t = THEMES[i];
+            const t = list[i];
             const on =
-              t.bg === S.bg &&
-              t.ink === S.ink &&
-              t.acc === S.acc &&
-              t.pill === S.pill;
+              t.bg === S[m.bg] &&
+              t.ink === S[m.ink] &&
+              t.acc === S[m.acc] &&
+              t.pill === S[m.pill];
             b.classList.toggle("active", on);
             b.setAttribute("aria-pressed", on);
           });
         }
-        markTheme();
         document
           .querySelectorAll('input[type="color"]')
           .forEach((el) => el.addEventListener("input", markTheme));
 
+        /* ---------- template switching ---------- */
+        const tabs = [...document.querySelectorAll("[data-template]")];
+        function setTemplate(t, persist) {
+          S.tpl = t === "cover" ? "cover" : "post";
+          document.body.dataset.t = S.tpl;
+          tabs.forEach((b) =>
+            b.setAttribute("aria-selected", b.dataset.template === S.tpl),
+          );
+          cv.setAttribute(
+            "aria-label",
+            S.tpl === "cover"
+              ? "Live preview of your 4:5 Instagram cover"
+              : "Live preview of your 4:5 Instagram post",
+          );
+          buildThemes();
+          markTheme();
+          if (persist) save();
+          render();
+        }
+        tabs.forEach((b) =>
+          b.addEventListener("click", () =>
+            setTemplate(b.dataset.template, true),
+          ),
+        );
+        setTemplate(S.tpl, false);
+
         /* ---------- reset ---------- */
         document.getElementById("reset").addEventListener("click", () => {
-          S = Object.assign({}, DEFAULTS);
+          S = Object.assign({}, DEFAULTS, { tpl: S.tpl });
           save();
           syncControls();
           markTheme();
@@ -1851,7 +2895,7 @@
           draw(c.getContext("2d"), k);
           const jpg = S.fmt === "jpg";
           const slug =
-            (S.title || "design-post")
+            ((S.tpl === "cover" ? S.ctitle : S.title) || "design-post")
               .trim()
               .replace(/\s+/g, "-")
               .replace(/[^a-z0-9\-]/gi, "")
