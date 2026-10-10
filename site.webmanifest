@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "Postin – Design Post Maker",
+  "short_name": "Postin",
+  "description": "Turn UI/UX designs into clean 4:5 Instagram posts.",
+  "lang": "en",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f1efea",
+  "theme_color": "#f1efea",
+  "categories": ["design", "graphics", "productivity"],
+  "icons": [
+    { "src": "/icons/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/maskable-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
