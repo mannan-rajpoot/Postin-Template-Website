@@ -799,9 +799,28 @@
         background: #111;
         color: #fff;
       }
-      body[data-t="post"] [data-tpl="cover"],
-      body[data-t="cover"] [data-tpl="post"] {
+      body[data-t="post"] [data-tpl]:not([data-tpl~="post"]),
+      body[data-t="cover"] [data-tpl]:not([data-tpl~="cover"]),
+      body[data-t="back"] [data-tpl]:not([data-tpl~="back"]) {
         display: none !important;
+      }
+      .seg.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .seg.three button {
+        font-size: 13.5px;
+        padding: 12px 6px;
+        gap: 7px;
+      }
+      @media (max-width: 600px) {
+        .seg.three button {
+          flex-direction: column;
+          gap: 4px;
+          font-size: 12.5px;
+          line-height: 1.2;
+          padding: 10px 4px;
+          text-align: center;
+        }
       }
       @media (prefers-reduced-motion: reduce) {
         * {
@@ -1031,7 +1050,7 @@
             layout stays perfectly consistent every time.
           </p>
 
-          <div class="seg" role="tablist" aria-label="Choose a template">
+          <div class="seg three" role="tablist" aria-label="Choose a template">
             <button
               type="button"
               role="tab"
@@ -1056,6 +1075,18 @@
                 <path d="M8 7h8" />
                 <rect x="8" y="12" width="8" height="9" rx="2" /></svg
               >Cover template
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="tabBack"
+              data-template="back"
+              aria-selected="false"
+            >
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="4" y="3" width="16" height="18" rx="3" />
+                <path d="M8 10h8M8 14h5" /></svg
+              >Back cover
             </button>
           </div>
 
@@ -1197,6 +1228,52 @@
             </div>
           </details>
 
+          <!-- ===== BACK COVER ===== -->
+          <details class="sec" data-tpl="back" open>
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 6h14M12 6v13M9 19h6" /></svg></span
+              >Back cover text
+            </summary>
+            <div class="sec-body">
+              <label class="f" for="btext"
+                >Centre bold text
+                <span class="hn"
+                  >(Enter = new line · [brackets] = colour)</span
+                ></label
+              >
+              <textarea
+                id="btext"
+                data-k="btext"
+                rows="3"
+                placeholder="e.g. Follow for more&#10;Have an app?&#10;Comment below"
+              ></textarea>
+              <div class="rng">
+                <div class="rng-h">
+                  <label for="bsize">Text size</label
+                  ><output id="bsizeO"></output>
+                </div>
+                <input
+                  type="range"
+                  id="bsize"
+                  data-k="bsize"
+                  min="44"
+                  max="120"
+                  step="1"
+                />
+              </div>
+              <label class="f" for="burl">Website URL</label>
+              <input
+                type="text"
+                id="burl"
+                data-k="burl"
+                maxlength="60"
+                placeholder="e.g. www.yourwebsite.com"
+              />
+            </div>
+          </details>
+
           <!-- ===== COVER ===== -->
           <details class="sec" data-tpl="cover" open>
             <summary>
@@ -1232,6 +1309,10 @@
                   step="1"
                 />
               </div>
+              <label class="check"
+                ><input type="checkbox" id="cshowsub" data-k="cshowsub" /> Show
+                subtitle</label
+              >
               <label class="f" for="csub"
                 >Subtitle <span class="hn">([brackets] = colour)</span></label
               >
@@ -1333,7 +1414,7 @@
               <label class="f" style="margin-top: 12px">Theme presets</label>
               <div class="themes" id="themes"></div>
 
-              <div data-tpl="post">
+              <div data-tpl="post back">
                 <label class="f">Custom colours</label>
                 <div class="colors">
                   <label class="swatch"
@@ -1348,7 +1429,7 @@
                     ><input type="color" id="dcol" data-k="dcol" /><span
                       >Description</span
                     ></label
-                  ><label class="swatch"
+                  ><label class="swatch" data-tpl="post"
                     ><input type="color" id="pill" data-k="pill" /><span
                       >Category label</span
                     ></label
@@ -1464,7 +1545,7 @@
                 maxlength="40"
                 placeholder="@yourname"
               />
-              <div class="row" data-tpl="post">
+              <div class="row" data-tpl="post back">
                 <div>
                   <label class="f" for="tl">Top-left text</label
                   ><input type="text" id="tl" data-k="tl" maxlength="40" />
@@ -1599,6 +1680,11 @@
           cbgrem: true,
           _v: 2,
           cswipe: true,
+          cshowsub: true,
+          /* back cover template */
+          btext: "Follow for more\nHave an apps\nComment below",
+          bsize: 84,
+          burl: "www.yourwebsite.com",
         };
         const PCT = ["scale", "avzoom", "pscale", "iscale"];
 
@@ -1915,14 +2001,11 @@
                   ? top + bh - dh
                   : top + (bh - dh) / 2;
             dyy += +S.offy || 0;
-            if (S.fit !== "fill") {
-              // up/down moves the image freely but keeps it fully visible
-              dyy = Math.min(Math.max(dyy, top), top + bh - dh);
-              dx = Math.min(Math.max(dx, bx), bx + bw - dw);
-            }
             c.save();
             c.beginPath();
-            c.rect(bx, top, bw, bh);
+            if (S.fit === "fill") c.rect(bx, top, bw, bh);
+            // auto-fit: Up / down moves the image freely (never cut by the frame)
+            else c.rect(0, 0, W, H);
             c.clip();
             if (S.blend) c.globalCompositeOperation = "multiply";
             c.drawImage(uiImg, dx, dyy, dw, dh);
@@ -2013,10 +2096,149 @@
         }
 
         /* =====================================================
+           BACK COVER TEMPLATE
+           (same corners + profile footer as the Post template,
+            bold message in the centre, website below, no swipe)
+           ===================================================== */
+        function drawBack(c, k, ghost) {
+          const GH = "#c4c0b6";
+          const INK = validColor(S.ink, DEFAULTS.ink);
+          const DCOL = validColor(S.dcol, DEFAULTS.dcol);
+          const ACC = validColor(S.acc, DEFAULTS.acc);
+          const put = (v, ph, x, y, col) => {
+            const t = v || (ghost ? ph : "");
+            if (!t) return;
+            c.fillStyle = v ? col : GH;
+            c.fillText(t, x, y);
+          };
+          c.setTransform(k, 0, 0, k, 0, 0);
+          c.clearRect(0, 0, W, H);
+          c.globalAlpha = 1;
+          c.globalCompositeOperation = "source-over";
+          c.setLineDash([]);
+          c.imageSmoothingEnabled = true;
+          c.imageSmoothingQuality = "high";
+          c.textBaseline = "middle";
+          spacing(c, "0px");
+
+          // background
+          c.fillStyle = validColor(S.bg);
+          c.fillRect(0, 0, W, H);
+
+          // top-left / top-right text (identical to Post template)
+          c.font = `400 25px ${FONT}`;
+          c.textAlign = "left";
+          put(S.tl, "Top-left text", 62, 72, DCOL);
+          c.textAlign = "right";
+          put(S.tr, "Top-right text", W - 62, 72, DCOL);
+
+          // ---- centre bold message (auto-shrinks if a word is too wide) ----
+          let ts = +S.bsize || 84;
+          const raw = (S.btext || "").trim()
+            ? S.btext
+            : ghost
+              ? "Your Bold\nMessage Here"
+              : "";
+          const hasText = !!(S.btext || "").trim();
+          const paras = parseTitle(raw);
+          const setT = () => {
+            c.font = `800 ${ts}px ${FONT}`;
+            spacing(c, -ts * 0.03 + "px");
+          };
+          setT();
+          const maxWord = () =>
+            Math.max(0, ...paras.flat().map((t) => c.measureText(t.w).width));
+          while (ts > 30 && maxWord() > 900) {
+            ts -= 2;
+            setT();
+          }
+          const lines = wrapTokens(c, paras, 920);
+          const lh = ts * 1.14;
+          const url = (S.burl || "").trim();
+          const showUrl = !!url || ghost;
+          const urlSize = 31;
+          const gap = 58;
+          const blockH =
+            Math.max(lines.length, 1) * lh + (showUrl ? gap + urlSize : 0);
+          // optical centre of the 4:5 canvas
+          let y = H / 2 - blockH / 2 + lh / 2 - 10;
+          const sp = c.measureText(" ").width;
+          c.textAlign = "left";
+          lines.forEach((line) => {
+            let tot = 0;
+            line.forEach((t, i) => {
+              tot += c.measureText(t.w).width + (i ? sp : 0);
+            });
+            let x = W / 2 - tot / 2;
+            line.forEach((t) => {
+              c.fillStyle = !hasText ? GH : t.acc ? ACC : INK;
+              c.fillText(t.w, x, y);
+              x += c.measureText(t.w).width + sp;
+            });
+            y += lh;
+          });
+          spacing(c, "0px");
+
+          // website url below the message
+          if (showUrl) {
+            c.font = `600 ${urlSize}px ${FONT}`;
+            c.textAlign = "center";
+            const uy = y - lh / 2 + gap + urlSize / 2;
+            put(url, "www.yourwebsite.com", W / 2, uy, DCOL);
+          }
+
+          // footer: avatar + divider + name (identical to Post template)
+          const ax = 104,
+            ay = 1251,
+            ar = 44;
+          c.save();
+          c.beginPath();
+          c.arc(ax, ay, ar, 0, Math.PI * 2);
+          c.closePath();
+          c.clip();
+          if (avImg) {
+            const sc =
+              Math.max(
+                (2 * ar) / avImg.naturalWidth,
+                (2 * ar) / avImg.naturalHeight,
+              ) *
+              ((+S.avzoom || 100) / 100);
+            const w = avImg.naturalWidth * sc,
+              h = avImg.naturalHeight * sc;
+            c.drawImage(avImg, ax - w / 2, ay - h / 2, w, h);
+          } else {
+            c.fillStyle = "#141414";
+            c.fillRect(ax - ar, ay - ar, ar * 2, ar * 2);
+            c.fillStyle = "#4a4a4a";
+            c.beginPath();
+            c.arc(ax, ay - 9, 14, 0, Math.PI * 2);
+            c.fill();
+            c.beginPath();
+            c.ellipse(ax, ay + 34, 28, 24, 0, 0, Math.PI * 2);
+            c.fill();
+          }
+          c.restore();
+
+          c.strokeStyle = DCOL;
+          c.globalAlpha = 0.6;
+          c.lineWidth = 1.6;
+          c.beginPath();
+          c.moveTo(171, ay - 15);
+          c.lineTo(171, ay + 15);
+          c.stroke();
+          c.globalAlpha = 1;
+
+          c.font = `500 27px ${FONT}`;
+          c.textAlign = "left";
+          put(S.handle, "your.handle", 194, ay + 1, INK);
+        }
+
+        /* =====================================================
            COVER TEMPLATE
            ===================================================== */
         function draw(c, k, ghost) {
           if (S.tpl === "cover") drawCover(c, k, ghost);
+          else if (S.tpl === "back") drawBack(c, k, ghost);
           else drawPost(c, k, ghost);
         }
 
@@ -2179,7 +2401,7 @@
           const ss = 66;
           const hasSub = !!(S.csub || "").trim();
           let contentBottom = lastBase + 24;
-          if (hasSub || ghost) {
+          if (S.cshowsub !== false && (hasSub || ghost)) {
             c.font = `500 ${ss}px ${FONT_I}`;
             spacing(c, -ss * 0.02 + "px");
             const SACC = validColor(S.csubacc, DEFAULTS.csubacc);
@@ -2393,7 +2615,10 @@
             if (out)
               out.textContent = PCT.includes(k)
                 ? el.value + "%"
-                : el.value + (k === "tsize" || k === "ctsize" ? "px" : "");
+                : el.value +
+                  (k === "tsize" || k === "ctsize" || k === "bsize"
+                    ? "px"
+                    : "");
           };
           upd();
           const handler = () => {
@@ -2420,7 +2645,10 @@
             if (out)
               out.textContent = PCT.includes(k)
                 ? el.value + "%"
-                : el.value + (k === "tsize" || k === "ctsize" ? "px" : "");
+                : el.value +
+                  (k === "tsize" || k === "ctsize" || k === "bsize"
+                    ? "px"
+                    : "");
           });
         }
 
@@ -2857,7 +3085,7 @@
         /* ---------- template switching ---------- */
         const tabs = [...document.querySelectorAll("[data-template]")];
         function setTemplate(t, persist) {
-          S.tpl = t === "cover" ? "cover" : "post";
+          S.tpl = t === "cover" || t === "back" ? t : "post";
           document.body.dataset.t = S.tpl;
           tabs.forEach((b) =>
             b.setAttribute("aria-selected", b.dataset.template === S.tpl),
@@ -2866,7 +3094,9 @@
             "aria-label",
             S.tpl === "cover"
               ? "Live preview of your 4:5 Instagram cover"
-              : "Live preview of your 4:5 Instagram post",
+              : S.tpl === "back"
+                ? "Live preview of your 4:5 Instagram back cover"
+                : "Live preview of your 4:5 Instagram post",
           );
           buildThemes();
           markTheme();
@@ -2905,7 +3135,13 @@
           draw(c.getContext("2d"), k);
           const jpg = S.fmt === "jpg";
           const slug =
-            ((S.tpl === "cover" ? S.ctitle : S.title) || "design-post")
+            (
+              (S.tpl === "cover"
+                ? S.ctitle
+                : S.tpl === "back"
+                  ? "back-cover"
+                  : S.title) || "design-post"
+            )
               .trim()
               .replace(/\s+/g, "-")
               .replace(/[^a-z0-9\-]/gi, "")
