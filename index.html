@@ -1147,8 +1147,8 @@
                 <div>
                   <label class="f" for="fit">Image fit</label>
                   <select id="fit" data-k="fit">
-                    <option value="fill">Fill frame</option>
-                    <option value="fit">Fit inside</option>
+                    <option value="fit">Auto fit (never cropped)</option>
+                    <option value="fill">Fill frame (may crop)</option>
                   </select>
                 </div>
                 <div>
@@ -1171,7 +1171,7 @@
                     id="scale"
                     data-k="scale"
                     min="60"
-                    max="130"
+                    max="100"
                     step="1"
                   />
                 </div>
@@ -1565,7 +1565,7 @@
           pill: "#e9e7e2",
           acc: "#8a8780",
           tone: "off",
-          fit: "fill",
+          fit: "fit",
           valign: "center",
           blend: true,
           scale: 100,
@@ -1649,6 +1649,8 @@
             "ioffy",
           ].forEach((k) => delete saved0[k]);
         let S = Object.assign({}, DEFAULTS, saved0, { _v: 2 });
+        if (!saved0._fitMig) S.fit = "fit"; // one-time: old default cropped images
+        S._fitMig = 1;
         let uiImg = null,
           uiCv = null,
           avImg = null;
@@ -1895,14 +1897,17 @@
           if (uiImg) {
             const iw = uiImg.naturalWidth,
               ih = uiImg.naturalHeight;
-            const base =
-              S.fit === "fit"
-                ? Math.min(bw / iw, bh / ih)
-                : Math.max(bw / iw, bh / ih);
-            const fit = base * (S.scale / 100);
+            // AUTO-FIT: the whole image always stays inside the frame
+            // (never cropped), whether it has 1, 2 or 3 screens.
+            const contain = Math.min(bw / iw, bh / ih);
+            const cover = Math.max(bw / iw, bh / ih);
+            const base = S.fit === "fill" ? cover : contain;
+            const sc = Math.max(0.3, S.scale / 100);
+            // in auto-fit mode the size slider can only shrink, never overflow
+            const fit = S.fit === "fill" ? base * sc : base * Math.min(sc, 1);
             const dw = iw * fit,
               dh = ih * fit;
-            const dx = bx + (bw - dw) / 2;
+            let dx = bx + (bw - dw) / 2;
             let dyy =
               S.valign === "top"
                 ? top
@@ -1910,6 +1915,11 @@
                   ? top + bh - dh
                   : top + (bh - dh) / 2;
             dyy += +S.offy || 0;
+            if (S.fit !== "fill") {
+              // up/down moves the image freely but keeps it fully visible
+              dyy = Math.min(Math.max(dyy, top), top + bh - dh);
+              dx = Math.min(Math.max(dx, bx), bx + bw - dw);
+            }
             c.save();
             c.beginPath();
             c.rect(bx, top, bw, bh);
