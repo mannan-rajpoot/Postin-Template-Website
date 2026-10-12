@@ -1271,6 +1271,64 @@
                 maxlength="60"
                 placeholder="e.g. www.yourwebsite.com"
               />
+              <label class="f" id="biLbl"
+                >Website icon
+                <span class="hn">(auto-sizes to the text)</span></label
+              >
+              <label
+                class="drop"
+                id="biDrop"
+                tabindex="0"
+                aria-labelledby="biLbl"
+              >
+                <div class="ic avthumb" id="biThumb">
+                  <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18" />
+                    <path d="M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+                  </svg>
+                </div>
+                <div>
+                  <b id="biTitle">Upload website icon</b
+                  ><span>Logo or favicon · PNG / JPG / WebP / SVG</span>
+                </div>
+                <input type="file" id="biFile" accept="image/*" />
+              </label>
+              <label class="check"
+                ><input type="checkbox" id="bibg" data-k="bibg" /> Auto-remove
+                solid background around the icon</label
+              >
+              <div class="row" style="align-items: end">
+                <div class="rng">
+                  <div class="rng-h">
+                    <label for="bisize">Icon size</label
+                    ><output id="bisizeO"></output>
+                  </div>
+                  <input
+                    type="range"
+                    id="bisize"
+                    data-k="bisize"
+                    min="60"
+                    max="180"
+                    step="1"
+                  />
+                </div>
+                <div class="rng">
+                  <button
+                    class="btn-ghost small"
+                    id="biClear"
+                    type="button"
+                    style="width: 100%"
+                  >
+                    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M4 7h16" />
+                      <path d="M10 11v6M14 11v6" />
+                      <path d="M6 7l1 13h10l1-13" />
+                      <path d="M9 7V4h6v3" /></svg
+                    >Remove icon
+                  </button>
+                </div>
+              </div>
             </div>
           </details>
 
@@ -1685,8 +1743,10 @@
           btext: "Follow for more\nHave an apps\nComment below",
           bsize: 84,
           burl: "www.yourwebsite.com",
+          bisize: 100,
+          bibg: true,
         };
-        const PCT = ["scale", "avzoom", "pscale", "iscale"];
+        const PCT = ["scale", "avzoom", "pscale", "iscale", "bisize"];
 
         /* ---------- storage (safe) ---------- */
         const KEY = "postin_settings_v1",
@@ -1739,7 +1799,9 @@
         S._fitMig = 1;
         let uiImg = null,
           uiCv = null,
-          avImg = null;
+          avImg = null,
+          biImg = null,
+          biRaw = null;
 
         const cv = document.getElementById("cv");
         const ctx = cv.getContext("2d");
@@ -2155,11 +2217,26 @@
           const lines = wrapTokens(c, paras, 920);
           const lh = ts * 1.14;
           const url = (S.burl || "").trim();
-          const showUrl = !!url || ghost;
+          const showUrl = !!url || ghost || !!biImg;
           const urlSize = 31;
           const gap = 58;
+          // website icon: auto-sized from the text height, aspect ratio kept,
+          // very wide logos are capped so they never dominate the line
+          let icW = 0,
+            icH = 0;
+          if (biImg) {
+            const ratio = biImg.width / biImg.height;
+            icH = urlSize * 1.4 * ((+S.bisize || 100) / 100);
+            icW = icH * ratio;
+            const maxW = urlSize * 1.4 * 2.4 * ((+S.bisize || 100) / 100);
+            if (icW > maxW) {
+              icW = maxW;
+              icH = icW / ratio;
+            }
+          }
+          const rowH = Math.max(urlSize, icH);
           const blockH =
-            Math.max(lines.length, 1) * lh + (showUrl ? gap + urlSize : 0);
+            Math.max(lines.length, 1) * lh + (showUrl ? gap + rowH : 0);
           // optical centre of the 4:5 canvas
           let y = H / 2 - blockH / 2 + lh / 2 - 10;
           const sp = c.measureText(" ").width;
@@ -2182,9 +2259,22 @@
           // website url below the message
           if (showUrl) {
             c.font = `600 ${urlSize}px ${FONT}`;
-            c.textAlign = "center";
-            const uy = y - lh / 2 + gap + urlSize / 2;
-            put(url, "www.yourwebsite.com", W / 2, uy, DCOL);
+            const uy = y - lh / 2 + gap + rowH / 2;
+            const shown = url || (ghost && !biImg ? "www.yourwebsite.com" : "");
+            const tw = shown ? c.measureText(shown).width : 0;
+            const icGap = biImg && shown ? Math.round(urlSize * 0.5) : 0;
+            const total = icW + icGap + tw;
+            // icon + text are centred together as one group
+            let gx = W / 2 - total / 2;
+            if (biImg) {
+              c.drawImage(biImg, gx, uy - icH / 2, icW, icH);
+              gx += icW + icGap;
+            }
+            if (shown) {
+              c.textAlign = "left";
+              c.fillStyle = url ? DCOL : GH;
+              c.fillText(shown, gx, uy);
+            }
           }
 
           // footer: avatar + divider + name (identical to Post template)
@@ -2928,6 +3018,69 @@
             e.preventDefault();
             cvFile.click();
           }
+        });
+
+        /* ---------- back cover website icon ---------- */
+        const biFile = document.getElementById("biFile");
+        const biDrop = document.getElementById("biDrop");
+        const biTitle = document.getElementById("biTitle");
+        const biThumb = document.getElementById("biThumb");
+        const BI_ICON = biThumb.innerHTML;
+        function setBackIcon(file) {
+          loadImageFile(file, (img, f) => {
+            if (!img.naturalWidth || !img.naturalHeight) {
+              toast("That image has no size. Try a PNG or JPG.");
+              return;
+            }
+            biRaw = img;
+            biImg = processMock(img, S.bibg);
+            biThumb.textContent = "";
+            biThumb.style.background =
+              "url(" +
+              biImg.toDataURL("image/png") +
+              ") center/contain no-repeat #fff";
+            biTitle.textContent =
+              f.name.length > 30 ? f.name.slice(0, 27) + "…" : f.name;
+            render();
+          });
+        }
+        document.getElementById("bibg").addEventListener("change", () => {
+          if (biRaw) {
+            biImg = processMock(biRaw, S.bibg);
+            render();
+          }
+        });
+        biFile.addEventListener("change", (e) => {
+          setBackIcon(e.target.files[0]);
+          e.target.value = "";
+        });
+        ["dragenter", "dragover"].forEach((ev) =>
+          biDrop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            biDrop.classList.add("over");
+          }),
+        );
+        ["dragleave", "drop"].forEach((ev) =>
+          biDrop.addEventListener(ev, (e) => {
+            e.preventDefault();
+            biDrop.classList.remove("over");
+          }),
+        );
+        biDrop.addEventListener("drop", (e) =>
+          setBackIcon(e.dataTransfer.files[0]),
+        );
+        biDrop.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            biFile.click();
+          }
+        });
+        document.getElementById("biClear").addEventListener("click", () => {
+          biImg = biRaw = null;
+          biThumb.style.background = "";
+          biThumb.innerHTML = BI_ICON;
+          biTitle.textContent = "Upload website icon";
+          render();
         });
 
         /* ---------- theme presets ---------- */
