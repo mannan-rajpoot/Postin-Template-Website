@@ -309,8 +309,8 @@
       }
       .frame {
         /* canvas is 4:5 — size it so the whole post always fits the screen height */
-        width: min(100%, calc((100vh - 110px - 4vw) * 0.8 + 24px));
-        width: min(100%, calc((100dvh - 110px - 4vw) * 0.8 + 24px));
+        width: min(100%, calc((100vh - 110px - 4vw) * var(--ar, 0.8) + 24px));
+        width: min(100%, calc((100dvh - 110px - 4vw) * var(--ar, 0.8) + 24px));
       }
       .frame {
         background: #fff;
@@ -1020,7 +1020,7 @@
               aria-label="Live preview of your 4:5 Instagram post"
             ></canvas>
           </div>
-          <p class="hint" aria-live="polite">
+          <p class="hint" id="hint" aria-live="polite">
             Live preview · exports at 4:5 (1080×1350 or higher)
           </p>
         </section>
@@ -1332,6 +1332,39 @@
             </div>
           </details>
 
+          <!-- ===== COVER SIZE ===== -->
+          <details class="sec" data-tpl="cover" open>
+            <summary>
+              <span class="si"
+                ><svg class="ico" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="6" y="2.5" width="12" height="19" rx="2.5" />
+                  <path d="M9.5 18.5h5" /></svg></span
+              >Cover size
+            </summary>
+            <div class="sec-body">
+              <label class="f" for="csize">Format</label>
+              <select id="csize" data-k="csize">
+                <option value="feed">Feed post · 4:5 (1080 × 1350)</option>
+                <option value="reel">
+                  Instagram Reels · 9:16 (1080 × 1920)
+                </option>
+              </select>
+              <label class="check" id="csafeWrap"
+                ><input type="checkbox" id="csafe" data-k="csafe" /> Show
+                safe-zone guides
+                <span class="hn">(preview only, not exported)</span></label
+              >
+              <p
+                id="csizeNote"
+                style="
+                  font-size: 12.5px;
+                  color: #777;
+                  margin: 10px 0 0;
+                  line-height: 1.45;
+                "
+              ></p>
+            </div>
+          </details>
           <!-- ===== COVER ===== -->
           <details class="sec" data-tpl="cover" open>
             <summary>
@@ -1682,8 +1715,8 @@
 
     <script>
       (function () {
-        const W = 1080,
-          H = 1350;
+        const W = 1080;
+        let H = 1350; // 1350 = 4:5 feed, 1920 = 9:16 Reels cover
         const FONT =
           "'Plus Jakarta Sans', Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif";
         const FONT_T =
@@ -1739,6 +1772,8 @@
           _v: 2,
           cswipe: true,
           cshowsub: true,
+          csize: "feed",
+          csafe: true,
           /* back cover template */
           btext: "Follow for more\nHave an apps\nComment below",
           bsize: 84,
@@ -2327,6 +2362,7 @@
            COVER TEMPLATE
            ===================================================== */
         function draw(c, k, ghost) {
+          H = curH();
           if (S.tpl === "cover") drawCover(c, k, ghost);
           else if (S.tpl === "back") drawBack(c, k, ghost);
           else drawPost(c, k, ghost);
@@ -2443,6 +2479,13 @@
             c.fillRect(0, 0, W, H);
           }
 
+          // Reels: the whole 4:5 layout sits in the centre safe zone,
+          // background + phone still run edge to edge
+          const HL = 1350;
+          const oy = Math.round((H - HL) / 2);
+          c.save();
+          c.translate(0, oy);
+
           // ---- main title (auto-shrinks if a word is too wide) ----
           let ts = +S.ctsize || 164;
           const setT = () => {
@@ -2553,7 +2596,7 @@
             const ratio = uiCv ? uiCv.height / uiCv.width : 2.07;
             const top0 = contentBottom + 62;
             let pw = beside
-              ? Math.min(Math.max((H - top0) / 1.13, 440), 640, pwLimit)
+              ? Math.min(Math.max((HL - top0) / 1.13, 440), 640, pwLimit)
               : Math.min(Math.max((clipY - top0) / 0.95, 420), 640);
             pw *= (+S.pscale || 100) / 100;
             const ph = pw * ratio;
@@ -2566,7 +2609,7 @@
               off.width = c.canvas.width;
               off.height = c.canvas.height;
               pc = off.getContext("2d");
-              pc.setTransform(k, 0, 0, k, 0, 0);
+              pc.setTransform(k, 0, 0, k, 0, oy * k);
               pc.textBaseline = "alphabetic";
               pc.imageSmoothingQuality = "high";
             }
@@ -2582,7 +2625,7 @@
               pc.setLineDash([]);
               pc.fillStyle = "#9a968c";
               pc.textAlign = "center";
-              const vis = Math.min(H, top + ph) - top;
+              const vis = Math.min(HL, top + ph) - top;
               pc.font = `600 28px ${FONT}`;
               pc.fillText(
                 "Upload your iPhone mockup",
@@ -2605,7 +2648,7 @@
               pc.fillStyle = "#000";
               pc.fillRect(0, clipY, W, H - clipY);
               pc.globalCompositeOperation = "source-over";
-              c.drawImage(off, 0, 0, W, H);
+              c.drawImage(off, 0, -oy, W, H);
             }
           }
 
@@ -2665,6 +2708,95 @@
             c.lineTo(rx - 10, ay + 11);
             c.stroke();
           }
+
+          c.restore();
+
+          // ---- preview-only safe-zone guides (never exported) ----
+          if (ghost && S.csafe && oy > 0) {
+            c.save();
+            c.fillStyle = "rgba(0,0,0,0.07)";
+            c.fillRect(0, 0, W, oy);
+            c.fillRect(0, oy + HL, W, H - oy - HL);
+            c.setLineDash([14, 10]);
+            c.strokeStyle = "rgba(74,110,224,0.9)";
+            c.lineWidth = 2;
+            c.beginPath();
+            c.moveTo(0, oy);
+            c.lineTo(W, oy);
+            c.moveTo(0, oy + HL);
+            c.lineTo(W, oy + HL);
+            c.stroke();
+            c.setLineDash([]);
+            c.font = `600 20px ${FONT_I}`;
+            c.fillStyle = "rgba(74,110,224,0.95)";
+            c.textAlign = "center";
+            c.textBaseline = "alphabetic";
+            c.fillText(
+              "Reels UI zone · outside profile-grid crop",
+              W / 2,
+              oy - 16,
+            );
+            c.fillText(
+              "Reels UI zone · outside profile-grid crop",
+              W / 2,
+              oy + HL + 34,
+            );
+            c.restore();
+          }
+        }
+
+        /* ---------- size mode (Feed 4:5 / Reels 9:16) ---------- */
+        function curH() {
+          return S.tpl === "cover" && S.csize === "reel" ? 1920 : 1350;
+        }
+        // Reels at 3x would exceed some phones' canvas limit, so Ultra is 2.8x there
+        function expK() {
+          const k = +S.exp || 2;
+          return curH() === 1920 && k >= 3 ? 2.8 : k;
+        }
+        function syncSize() {
+          H = curH();
+          if (cv.height !== H) cv.height = H;
+          const reel = H === 1920;
+          cv.parentElement.style.setProperty("--ar", reel ? "0.5625" : "0.8");
+          const hint = document.getElementById("hint");
+          if (hint)
+            hint.textContent = reel
+              ? "Live preview · exports at 9:16 Reels (1080×1920 or higher)"
+              : "Live preview · exports at 4:5 (1080×1350 or higher)";
+          cv.setAttribute(
+            "aria-label",
+            S.tpl === "cover"
+              ? reel
+                ? "Live preview of your 9:16 Instagram Reels cover"
+                : "Live preview of your 4:5 Instagram cover"
+              : S.tpl === "back"
+                ? "Live preview of your 4:5 Instagram back cover"
+                : "Live preview of your 4:5 Instagram post",
+          );
+          const ex = document.getElementById("exp");
+          if (ex) {
+            const names = reel
+              ? ["Reels", "High", "Ultra"]
+              : ["Instagram", "High", "Ultra"];
+            [...ex.options].forEach((o, i) => {
+              const kk = i === 2 && reel ? 2.8 : i + 1;
+              o.textContent =
+                Math.round(W * kk) +
+                " × " +
+                Math.round(H * kk) +
+                " (" +
+                names[i] +
+                ")";
+            });
+          }
+          const wrap = document.getElementById("csafeWrap");
+          if (wrap) wrap.style.display = reel ? "" : "none";
+          const note = document.getElementById("csizeNote");
+          if (note)
+            note.textContent = reel
+              ? "Reels cover: 1080×1920. Title, subtitle and footer sit in the centre 4:5 area, so the cover also looks right in the profile grid and clear of the Reels buttons and caption."
+              : "Standard 4:5 carousel / feed cover.";
         }
 
         // throttle redraws to one per frame so sliders stay smooth on phones
@@ -2673,6 +2805,7 @@
           if (raf) return;
           raf = requestAnimationFrame(() => {
             raf = 0;
+            syncSize();
             draw(ctx, 1, true);
           });
         }
@@ -3251,6 +3384,7 @@
                 ? "Live preview of your 4:5 Instagram back cover"
                 : "Live preview of your 4:5 Instagram post",
           );
+          syncSize();
           buildThemes();
           markTheme();
           if (persist) save();
@@ -3281,10 +3415,11 @@
           label.textContent = "Preparing…";
           await fontsReady;
           await new Promise((r) => setTimeout(r, 30));
-          const k = +S.exp || 2;
+          syncSize();
+          const k = expK();
           const c = document.createElement("canvas");
-          c.width = W * k;
-          c.height = H * k;
+          c.width = Math.round(W * k);
+          c.height = Math.round(H * k);
           draw(c.getContext("2d"), k);
           const jpg = S.fmt === "jpg";
           const slug =
@@ -3312,7 +3447,7 @@
               }
               const a = document.createElement("a");
               a.href = URL.createObjectURL(blob);
-              a.download = `postin-${slug.slice(0, 40)}-${W * k}x${H * k}.${jpg ? "jpg" : "png"}`;
+              a.download = `postin-${slug.slice(0, 40)}-${c.width}x${c.height}.${jpg ? "jpg" : "png"}`;
               document.body.appendChild(a);
               a.click();
               a.remove();
