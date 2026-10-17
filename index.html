@@ -1636,7 +1636,7 @@
                 maxlength="40"
                 placeholder="@yourname"
               />
-              <div class="row" data-tpl="post back">
+              <div class="row" data-tpl="post">
                 <div>
                   <label class="f" for="tl">Top-left text</label
                   ><input type="text" id="tl" data-k="tl" maxlength="40" />
@@ -2222,13 +2222,6 @@
           c.fillStyle = validColor(S.bg);
           c.fillRect(0, 0, W, H);
 
-          // top-left / top-right text (identical to Post template)
-          c.font = `400 25px ${FONT}`;
-          c.textAlign = "left";
-          put(S.tl, "Top-left text", 62, 72, DCOL);
-          c.textAlign = "right";
-          put(S.tr, "Top-right text", W - 62, 72, DCOL);
-
           // ---- centre bold message (auto-shrinks if a word is too wide) ----
           let ts = +S.bsize || 84;
           const raw = (S.btext || "").trim()
@@ -2254,7 +2247,7 @@
           const url = (S.burl || "").trim();
           const showUrl = !!url || ghost || !!biImg;
           const urlSize = 31;
-          const gap = 58;
+          const gap = Math.round(Math.min(34, Math.max(18, ts * 0.26)));
           // website icon: auto-sized from the text height, aspect ratio kept,
           // very wide logos are capped so they never dominate the line
           let icW = 0,
@@ -2281,7 +2274,7 @@
             line.forEach((t, i) => {
               tot += c.measureText(t.w).width + (i ? sp : 0);
             });
-            let x = W / 2 - tot / 2;
+            let x = W / 2 - tot / 2 - (ts * 0.03) / 2;
             line.forEach((t) => {
               c.fillStyle = !hasText ? GH : t.acc ? ACC : INK;
               c.fillText(t.w, x, y);
@@ -2519,7 +2512,7 @@
           let y = 166 + ts * 0.73; // baseline of first line
           tLines.forEach((line) => {
             const sp = c.measureText(" ").width;
-            let x = W / 2 - lineW(line) / 2;
+            let x = W / 2 - lineW(line) / 2 - (ts * 0.035) / 2;
             line.forEach((t) => {
               c.fillStyle = !S.ctitle ? GH : t.acc ? ACC : INK;
               c.fillText(t.w, x, y);
@@ -2545,13 +2538,13 @@
               900,
             );
             const slh = ss * 1.2;
-            let sy = lastBase + ts * 0.62,
+            let sy = lastBase + ts * 0.28 + ss * 0.76,
               lastL = W / 2,
               lastR = W / 2;
             sLines.forEach((line) => {
               const sp = c.measureText(" ").width;
               const tot = lineW(line);
-              let x = W / 2 - tot / 2;
+              let x = W / 2 - tot / 2 - (ss * 0.02) / 2;
               lastL = x;
               lastR = x + tot;
               line.forEach((t) => {
@@ -2567,9 +2560,9 @@
             if (S.cline) {
               brush(
                 c,
-                lastL + 30,
-                lastR + 28,
-                subBase + 33,
+                lastL + 22,
+                lastR - 22,
+                subBase + 30,
                 hasSub ? LCOL : GH,
               );
               contentBottom = subBase + 48;
